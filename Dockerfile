@@ -2,13 +2,12 @@ FROM ubuntu:18.04
 
 ARG TZONE='Europe/Moscow'
 ENV TZONE ${TZONE}
-ENV DEBIAN_FRONTEND noninteractive
 
-RUN apt-get -qy update && apt-get -qy install apt-utils busybox tcpdump nmap curl tmux python3 python3-pip postgresql-common libpq-dev
+RUN apt-get -qy update && DEBIAN_FRONTEND=noninteractive apt-get -qy install apt-utils busybox tcpdump nmap curl tmux python3 python3-pip postgresql-common libpq-dev tzdata
 RUN pip3 install pyinstaller virtualenv bpython
-RUN apt-get install -qqy --no-install-recommends tzdata
-RUN echo $TZONE > /etc/timezone
 RUN dpkg-reconfigure -f noninteractive tzdata
+RUN ln -snf /usr/share/zoneinfo/$TZONE /etc/localtime
+RUN echo $TZONE > /etc/timezone
 ADD tmux.conf /etc/tmux.conf
 
 VOLUME /opt/
